@@ -2,11 +2,12 @@ package main
 
 import (
 	"log"
-	"time"
+	"sync"
 	"math/rand"
 )
 
 func problem1() {
+	var wg sync.WaitGroup
 	const limit = 100
 	c := make(chan int, limit)
 
@@ -18,24 +19,19 @@ func problem1() {
 
 	for inx := 0; inx < 10; inx++ {
 
-		go printRandom1(inx, c)
+		wg.Add(1)
+		go printRandom1(inx, c, &wg)
 
 	}
 
-	//
-	// Todo:
-	//
-	// Remove this quick and dirty sleep
-	// against a synchronized wait until all
-	// go routines are finished.
-	//
-
-	time.Sleep(5 * time.Second)
+	wg.Wait()
 
 	log.Printf("problem1: finised --------------------------------------------")
 }
 
-func printRandom1(slot int, c <-chan int) {
+func printRandom1(slot int, c <-chan int, wg *sync.WaitGroup) {
+	defer wg.Done()
+
 	for inx := 0; inx < 25; inx++ {
 		select {
 		case <-c:
