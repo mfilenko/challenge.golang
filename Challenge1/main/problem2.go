@@ -7,20 +7,14 @@ import (
 )
 
 func problem2() {
+	ticker := time.NewTicker(time.Second)
+	defer ticker.Stop()
 
 	log.Printf("problem2: started --------------------------------------------")
 
-	//
-	// Todo:
-	//
-	// Throttle all go subroutines in a way,
-	// that every one second one random number
-	// is printed.
-	//
-
 	for inx := 0; inx < 10; inx++ {
 
-		go printRandom2(inx)
+		go printRandom2(inx, ticker)
 
 	}
 
@@ -39,10 +33,12 @@ func problem2() {
 	log.Printf("problem2: finished -------------------------------------------")
 }
 
-func printRandom2(slot int) {
+func printRandom2(slot int, ticker *time.Ticker) {
 
 	for inx := 0; inx < 10; inx++ {
-
+		// The following line blocks further execution until a value will be
+		// delivered to the channel by a ticker.
+		<-ticker.C
 		log.Printf("problem2: slot=%03d count=%05d rand=%f", slot, inx, rand.Float32())
 
 	}
